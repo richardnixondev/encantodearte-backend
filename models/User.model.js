@@ -33,6 +33,11 @@ const addressSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema ({
   surname: {type: String, required: true},
   lastname: {type: String, required: true},
+  //will be used on the middleware for private routes.
+  isAdmin: {
+      type: Boolean,
+      default:false
+    },
   email: {
     type: String, 
     required: [true, "Email is required."],
