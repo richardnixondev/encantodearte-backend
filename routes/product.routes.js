@@ -51,17 +51,17 @@ router.post('/', isAuthenticated, async (req, res) => {
 // Put update product by ID (private router)
 router.put('/:productId', isAuthenticated, async(req, res) => {
     try{
-        const updatedProduct = await Product.findByIdAndUpdate({
+        const updatedProduct = await Product.findByIdAndUpdate(
             req.params.productId,
             req.body,
             { new: true, runValidators: true }
         );
         if (!updatedProduct) {
-            return res.status(404).json({ message: 'Error updateing product', error: err });
+            return res.status(404).json({ message: 'Product not found.' });
         }
-        res.status(200).json(updateProduct);
+        res.status(200).json(updatedProduct);
   } catch (err) {
-        res.status(400).json({ message: 'Error updating', error: err});
+        res.status(400).json({ message: 'Error updating product', error: err});
   }
 });
 
