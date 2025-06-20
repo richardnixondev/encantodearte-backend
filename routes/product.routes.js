@@ -68,13 +68,13 @@ router.put('/:productId', isAuthenticated, async(req, res) => {
 //Delete product by ID (private router)
 router.delete('/:productId', isAuthenticated, async (req, res) => {
     try {
-        const deletedProduct = await Product.findByIdAndDelete(req, res) => {
+        const deletedProduct = await Product.findByIdAndDelete(req.params.productId);
         if (!deletedProduct) {
             return res.status(404).json({ message: 'Product now found' });
         }
-        res.status(200)/.json({'produc deleted successfully'})
-     } catch (err) {
-        res.status.(500).json({ message: 'Error deleting product', error: err });
+        res.status(200).json({'product deleted successfully'})
+     }  catch (err) {
+        res.status(500).json({ message: 'Error deleting product', error: err });
     } 
 });
 
