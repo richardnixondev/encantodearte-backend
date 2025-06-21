@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Product = require('../models/Product.model');
-const { isAuthenticated } = require {'../middleware/jwt.middleware'};
+const Product = require("../models/Product.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
 //Get all products
 router.get('/', async (req, res) => {
@@ -70,11 +70,11 @@ router.delete('/:productId', isAuthenticated, async (req, res) => {
     try {
         const deletedProduct = await Product.findByIdAndDelete(req.params.productId);
         if (!deletedProduct) {
-            return res.status(404).json({ message: 'Product now found' });
+            return res.status(404).json({ message: "Product now found" });
         }
-        res.status(200).json({'product deleted successfully'})
+        res.status(200).json({message: "product deleted successfully"})
      }  catch (err) {
-        res.status(500).json({ message: 'Error deleting product', error: err });
+        res.status(500).json({ message: "Error deleting product", error: err });
     } 
 });
 
