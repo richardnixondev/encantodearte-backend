@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-const Order = require('../models/order.model');
-const Product = require('../models/product.model');
-const User = require('../models/user.model');
+const Order = require('../models/Order.model');
+const Product = require('../models/Product.model');
+const User = require('../models/User.model');
 const { isAdmin } = require('../middleware/admin.middleware');
 
 //get user logged
 const getUserFromToken = async (req) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return null;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
   return await User.findById(decoded._id);
 };
 
@@ -48,6 +48,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(order);
   } catch (err) {
+   console.log(err)
     res.status(500).json({ message: 'Error creating order', error: err });
   }
 });

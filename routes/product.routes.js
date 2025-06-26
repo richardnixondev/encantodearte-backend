@@ -35,7 +35,7 @@ router.post('/', isAuthenticated, async (req, res) => {
         const newProduct = await Product.create({
             name,
             description,
-            categoty,
+            category,
             price,
             stock,
             imageUrl,

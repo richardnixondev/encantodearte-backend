@@ -11,7 +11,7 @@ const isAdmin = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const used = await User.findById(decoded_id);
+        const user = await User.findById(decoded._id);
         if(!user || !user.isAdmin) {
             return res.status(403).json({ message: 'Access denied.'});
         }
