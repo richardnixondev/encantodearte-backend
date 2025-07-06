@@ -1,6 +1,8 @@
 // ℹ️ Load environment variables
 require("dotenv").config();
 
+
+
 // ℹ️ Connect to MongoDB
 require("./db");
 
@@ -11,8 +13,8 @@ const cors = require("cors");
 const app = express();
 
 // Middleware
-app.use(cors()); // 👈 Deve vir depois da criação do app
-app.use(express.json()); // Necessário para JSON requests
+app.use(cors()); 
+app.use(express.json());
 
 // Custom config (logger, parsers, etc.)
 require("./config")(app);
@@ -29,6 +31,11 @@ app.use("/products", productRoutes);
 
 const orderRoutes = require("./routes/order.routes");
 app.use("/orders", orderRoutes);
+
+//local files for images
+const path = require("path");
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Error handling (deve vir depois das rotas)
 require("./error-handling")(app);
