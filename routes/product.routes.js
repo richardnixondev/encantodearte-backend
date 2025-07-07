@@ -69,17 +69,10 @@ router.post('/', isAuthenticated, isAdmin, upload.single('image'), async (req, r
     console.log("[POST /products] Created:", newProduct._id);
     res.status(201).json(newProduct);
   } catch (err) {
-    console.error("[POST /products] Validation error:", err.message);
-    if (err.name === "ValidationError") {
-      return res.status(400).json({
-        message: "Validation failed",
-        details: err.errors,
-       });
-   }
-
-  res.status(400).json({ message: 'Error creating product', error: err });
-}
-
+    console.error("[POST /products] Error:", err);
+    res.status(400).json({ message: 'Error creating product', error: err });
+  }
+});
 
 // PUT update product by ID
 router.put('/:productId', isAuthenticated, isAdmin, upload.single('image'), async (req, res) => {
