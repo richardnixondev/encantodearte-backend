@@ -1,25 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 
 const Order = require('../models/Order.model');
 const Product = require('../models/Product.model');
-const User = require('../models/User.model');
+const { isAuthenticated } = require('../middleware/jwt.middleware.js');
 const { isAdmin } = require('../middleware/admin.middleware');
 
-//get user logged
-const getUserFromToken = async (req) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return null;
-  const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-  return await User.findById(decoded._id);
-};
-
-// [POST] create new order
-router.post('/', async (req, res) => {
+// [POST] create new order (user)
+router.post('/', isAuthenticated, async (req, res) => {
   try {
-    const user = await getUserFromToken(req);
-    if (!user) return res.status(401).json({ message: 'Unauthorized' });
+    const userId = req.payload._id;
 
     const { items, shippingAddress, totalAmount, paymentId } = req.body;
 
@@ -27,7 +17,6 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Order must include at least one item.' });
     }
 
-    // Check if product exist
     for (const item of items) {
       const product = await Product.findById(item.product);
       if (!product) {
@@ -39,7 +28,7 @@ router.post('/', async (req, res) => {
     }
 
     const order = await Order.create({
-      user: user._id,
+      user: userId,
       items,
       shippingAddress,
       totalAmount,
@@ -48,38 +37,36 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(order);
   } catch (err) {
-   console.log(err)
+    console.log(err);
     res.status(500).json({ message: 'Error creating order', error: err });
   }
 });
 
-// [GET] check orders (private route)
-router.get('/me', async (req, res) => {
+// [GET] user's own orders
+router.get('/me', isAuthenticated, async (req, res) => {
   try {
-    const user = await getUserFromToken(req);
-    if (!user) return res.status(401).json({ message: 'Unauthorized' });
-
-    const orders = await Order.find({ user: user._id }).sort({ createdAt: -1 });
+    const userId = req.payload._id;
+    const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching orders', error: err });
+    res.status(500).json({ message: 'Error fetching user orders', error: err });
   }
 });
 
-// [GET] check all orders (admin)
-router.get('/', isAdmin, async (req, res) => {
+// [GET] all orders (admin only)
+router.get('/', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const orders = await Order.find()
       .populate('user', 'email')
       .sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching orders', error: err });
+    res.status(500).json({ message: 'Error fetching all orders', error: err });
   }
 });
 
-// [PUT] Update order status (admin)
-router.put('/:orderId/status', isAdmin, async (req, res) => {
+// [PUT] update order status (admin only)
+router.put('/:orderId/status', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const { status } = req.body;
     const validStatuses = ['pending', 'paid', 'shipped', 'delivered', 'cancelled'];
