@@ -1,4 +1,5 @@
 const path = require("path");
+const express = require("express");
 const app = require("./app");
 
 // ℹ️ Sets the PORT from .env or defaults to 5005
