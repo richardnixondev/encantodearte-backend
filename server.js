@@ -1,8 +1,37 @@
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+
 const app = require("./app");
 
-// ℹ️ Sets the PORT from .env or defaults to 5005
-const PORT = process.env.PORT || 5005;
+// Lista de domínios permitidos
+const allowedOrigins = [
+  "https://encantodearte.com.br",
+  "https://encantodearte-frontend.onrender.com"
+];
 
+// Configura CORS
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
+// Servir o front-end buildado do React (assumindo client/dist)
+app.use(express.static(path.join(__dirname, "client", "dist")));
+
+// Rota fallback para SPA (React Router)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
+
+// Define porta
+const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
