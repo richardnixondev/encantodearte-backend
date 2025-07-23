@@ -8,12 +8,12 @@ require("./db");
 
 // Core modules
 const express = require("express");
-const cors = require("cors");
+//const cors = require("cors");
 
 const app = express();
 
 // Middleware
-app.use(cors()); 
+//app.use(cors()); 
 app.use(express.json());
 
 // Custom config (logger, parsers, etc.)
