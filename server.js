@@ -4,11 +4,6 @@ const cors = require("cors");
 
 const app = require("./app");
 
-// Lista de domínios permitidos
-const allowedOrigins = [
-  "https://encantodearte.com.br",
-  "https://encantodearte-frontend.onrender.com"
-];
 
 // Configura CORS
 app.use(cors({
@@ -21,6 +16,14 @@ app.use(cors({
   },
   credentials: true
 }));
+
+
+// Lista de domínios permitidos
+const allowedOrigins = [
+  "https://encantodearte.com.br",
+  "https://encantodearte-frontend.onrender.com"
+];
+
 
 // Servir o front-end buildado do React (assumindo client/dist)
 app.use(express.static(path.join(__dirname, "client", "dist")));
